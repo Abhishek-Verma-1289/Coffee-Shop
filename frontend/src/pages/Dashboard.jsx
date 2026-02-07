@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import OrderQueue from '../components/OrderQueue';
 import BaristaBoard from '../components/BaristaBoard';
-import MetricsPanel from '../components/MetricsPanel';
 import SimulationControls from '../components/SimulationControls';
 import MenuOrder from '../components/MenuOrder';
 import * as api from '../services/api';
@@ -11,7 +10,6 @@ function Dashboard() {
   const [queueMode, setQueueMode] = useState('SMART'); // FIFO or SMART
   const [orders, setOrders] = useState([]);
   const [baristas, setBaristas] = useState([]);
-  const [metrics, setMetrics] = useState({});
 
   // Polling interval for updates
   useEffect(() => {
@@ -33,7 +31,6 @@ function Dashboard() {
       
       setOrders(ordersData);
       setBaristas(baristasData);
-      setMetrics(metricsData);
       
       // Update mode from backend
       if (metricsData.currentMode) {
@@ -100,11 +97,6 @@ function Dashboard() {
           <BaristaBoard baristas={baristas} />
           <SimulationControls onUpdate={fetchData} />
         </div>
-      </div>
-
-      {/* Metrics Row */}
-      <div className="max-w-7xl mx-auto mt-6">
-        <MetricsPanel metrics={metrics} />
       </div>
 
       {/* Menu Order Section */}

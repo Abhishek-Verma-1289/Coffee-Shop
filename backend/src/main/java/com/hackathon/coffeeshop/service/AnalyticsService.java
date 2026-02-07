@@ -502,6 +502,25 @@ public class AnalyticsService {
         stats.put("peakArrivalRate", "1.4 customers/minute (Poisson)");
         stats.put("algorithm", "SMART Priority (40/25/10/25)");
 
+        // Individual order details for drill-down
+        List<Map<String, Object>> orderDetails = new ArrayList<>();
+        for (int i = 0; i < N; i++) {
+            Map<String, Object> od = new LinkedHashMap<>();
+            od.put("id", i + 1);
+            od.put("drink", orderDrink[i].getDisplayName());
+            od.put("prepTime", orderDrink[i].getPreparationTime());
+            od.put("customerType", custType[i].getDisplayName());
+            od.put("arrivalMinute", r2(arrivalMin[i]));
+            od.put("waitTime", r2(smartWait[i]));
+            od.put("totalTime", r2(smartTotal[i]));
+            od.put("served", smartServed[i]);
+            od.put("complaint", !smartServed[i] || smartTotal[i] > 10.0);
+            od.put("barista", smartBarista[i] >= 0 ? "Barista " + (smartBarista[i] + 1) : "—");
+            od.put("skippedBy", skipped[i]);
+            orderDetails.add(od);
+        }
+        stats.put("orderDetails", orderDetails);
+
         System.out.println("=== Rush Hour Simulation Complete ===");
         System.out.println("SMART: Avg Wait=" + r2(smartAvgWait) + " min, Complaints=" + smartComplaintCount + "/" + N);
         System.out.println("FIFO:  Avg Wait=" + r2(fifoAvgWait) + " min, Complaints=" + fifoComplaintCount + "/" + N);
