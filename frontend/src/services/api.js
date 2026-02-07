@@ -115,8 +115,8 @@ export const getLast100Stats = async () => {
   return response.json();
 };
 
-export const simulateRushHour200 = async () => {
-  const response = await fetch(`${API_BASE}/analytics/rush-hour-200`, {
+export const simulateRushHour100 = async () => {
+  const response = await fetch(`${API_BASE}/analytics/rush-hour-100`, {
     method: 'POST',
   });
   return response.json();

@@ -14,7 +14,6 @@ function AnalyticsPage() {
   const [last100Stats, setLast100Stats] = useState(null);
   const [rushHourStats, setRushHourStats] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [testLoading, setTestLoading] = useState(false);
   const [rushLoading, setRushLoading] = useState(false);
 
   useEffect(() => {
@@ -36,27 +35,6 @@ function AnalyticsPage() {
     }
   };
 
-  const handleTest100Orders = async () => {
-    if (!window.confirm('Generate and complete 100 random orders instantly?')) {
-      return;
-    }
-    
-    setTestLoading(true);
-    try {
-      const response = await api.generateTest100Orders();
-      alert(`✅ ${response.message}\n\n` +
-            `Orders Generated: ${response.ordersGenerated}\n` +
-            `Orders Completed: ${response.ordersCompleted}\n\n` +
-            `You can now view detailed statistics!`);
-      await loadStats();
-    } catch (error) {
-      console.error('Failed to generate test orders:', error);
-      alert('❌ Error generating test orders');
-    } finally {
-      setTestLoading(false);
-    }
-  };
-
   const handleLoadLast100 = async () => {
     setLoading(true);
     try {
@@ -71,13 +49,9 @@ function AnalyticsPage() {
   };
 
   const handleRushHour200 = async () => {
-    if (!window.confirm('Simulate rush hour with 200 orders using SMART priority algorithm?\n\nThis will show realistic statistics with:\n- Poisson arrivals (λ=1.4/min)\n- 3 baristas working in parallel\n- 3-hour simulation period')) {
-      return;
-    }
-    
     setRushLoading(true);
     try {
-      const response = await api.simulateRushHour200();
+      const response = await api.simulateRushHour100();
       console.log('Rush Hour Response:', response); // Debug log
       
       if (!response) {
@@ -85,17 +59,6 @@ function AnalyticsPage() {
       }
       
       setRushHourStats(response);
-      const fifo = response.fifoComparison || {};
-      alert(`✅ Rush Hour Simulation Complete!\n\n` +
-            `🧠 SMART Priority Results:\n` +
-            `  Orders Served: ${response.ordersServed || 0} / ${response.totalOrders || 200}\n` +
-            `  Avg Wait Time: ${response.averageWaitTime || 0} min\n` +
-            `  Timeouts: ${response.totalComplaints || 0} (${response.complaintRate || 0}%)\n\n` +
-            `📋 FIFO Baseline:\n` +
-            `  Avg Wait Time: ${fifo.averageWaitTime || 0} min\n` +
-            `  Timeouts: ${fifo.totalComplaints || 0} (${fifo.complaintRate || 0}%)\n\n` +
-            `📈 Improvement: Wait -${response.waitTimeImprovement || 0}%, Complaints -${response.complaintReduction || 0}%\n\n` +
-            `Check the detailed comparison table below!`);
       await loadStats();
     } catch (error) {
       console.error('Failed to simulate rush hour:', error);
@@ -143,18 +106,11 @@ function AnalyticsPage() {
                 ← Back to Dashboard
               </button>
               <button
-                onClick={handleTest100Orders}
-                disabled={testLoading}
-                className={`${testLoading ? 'bg-gray-400' : 'bg-blue-500 hover:bg-blue-600'} text-white font-semibold py-2 px-6 rounded-lg transition-colors flex items-center gap-2`}
-              >
-                {testLoading ? '⏳ Processing...' : '🧪 Generate & Complete 100 Orders'}
-              </button>
-              <button
                 onClick={handleRushHour200}
                 disabled={rushLoading}
                 className={`${rushLoading ? 'bg-gray-400' : 'bg-red-500 hover:bg-red-600'} text-white font-semibold py-2 px-6 rounded-lg transition-colors flex items-center gap-2`}
               >
-                {rushLoading ? '⏳ Simulating...' : '🔥 Rush Hour (200 Orders)'}
+                {rushLoading ? '⏳ Simulating...' : '🔥 Rush Hour (100 Orders)'}
               </button>
             </div>
           </div>
@@ -164,7 +120,7 @@ function AnalyticsPage() {
         {rushHourStats && (
           <div className="bg-gradient-to-r from-red-50 to-orange-50 rounded-lg shadow-lg p-6 mb-6 border-2 border-orange-300">
             <div className="flex justify-between items-center mb-4">
-              <h2 className="text-2xl font-bold text-gray-800">🔥 Rush Hour Simulation Results (200 Orders)</h2>
+              <h2 className="text-2xl font-bold text-gray-800">🔥 Rush Hour Simulation Results (100 Orders)</h2>
               <button
                 onClick={() => setRushHourStats(null)}
                 className="text-gray-500 hover:text-gray-700 text-xl"

@@ -179,7 +179,7 @@ public class AnalyticsService {
     }
 
     /**
-     * Simulate rush hour with 200 orders using EXACT specification algorithm:
+     * Simulate rush hour with 100 orders using EXACT specification algorithm:
      * Dynamic Priority Queue with Predictive Scheduling
      * 
      * Priority: (wait×40%) + (complexity×25%) + (loyalty×10%) + (urgency×25%)
@@ -192,7 +192,7 @@ public class AnalyticsService {
     public Map<String, Object> simulateRushHour200Orders() {
         Random rng = new Random();
         DrinkType[] drinks = DrinkType.values();
-        int N = 200;
+        int N = 100;
 
         // ===== Phase 1: Generate arrival schedule (Poisson λ=1.4/min) =====
         double[] arrivalMin = new double[N];

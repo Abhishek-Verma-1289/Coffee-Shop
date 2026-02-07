@@ -61,11 +61,11 @@ public class AnalyticsController {
     }
 
     /**
-     * POST /analytics/rush-hour-200
-     * Simulate rush hour with 200 orders using SMART priority algorithm
+     * POST /analytics/rush-hour-100
+     * Simulate rush hour with 100 orders using SMART priority algorithm
      */
-    @PostMapping("/rush-hour-200")
-    public ResponseEntity<Map<String, Object>> simulateRushHour200() {
+    @PostMapping("/rush-hour-100")
+    public ResponseEntity<Map<String, Object>> simulateRushHour100() {
         Map<String, Object> rushHourStats = analyticsService.simulateRushHour200Orders();
         return ResponseEntity.ok(rushHourStats);
     }
