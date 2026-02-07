@@ -1,0 +1,30 @@
+version: '3.8'
+
+services:
+  backend:
+    image: abhishek1289verma/coffee-shop-backend:latest
+    container_name: coffee-backend
+    ports:
+      - "8082:8081"
+    networks:
+      - coffee-network
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:8081/orders/queue"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+  frontend:
+    image: abhishek1289verma/coffee-shop-frontend:latest
+    container_name: coffee-frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    networks:
+      - coffee-network
+
+networks:
+  coffee-network:
+    driver: bridge

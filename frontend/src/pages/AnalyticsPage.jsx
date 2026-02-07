@@ -15,7 +15,7 @@ function AnalyticsPage() {
   const [showHistory, setShowHistory] = useState(false);
   const [rushLoading, setRushLoading] = useState(false);
   const [showOrderDetails, setShowOrderDetails] = useState(null); // holds orderDetails array when open
-
+  
   useEffect(() => {
     loadStats();
     const interval = setInterval(loadStats, 5000); // Refresh every 5 seconds
@@ -56,6 +56,25 @@ function AnalyticsPage() {
     } finally {
       setRushLoading(false);
     }
+  };
+
+  const handleToggleHistory = () => {
+    const currentScroll = window.scrollY;
+    setShowHistory(prev => !prev);
+    // Restore scroll position after DOM update
+    setTimeout(() => window.scrollTo(0, currentScroll), 0);
+  };
+
+  const handleShowOrderDetails = (orderDetails) => {
+    const currentScroll = window.scrollY;
+    setShowOrderDetails(orderDetails);
+    setTimeout(() => window.scrollTo(0, currentScroll), 0);
+  };
+
+  const handleCloseOrderDetails = () => {
+    const currentScroll = window.scrollY;
+    setShowOrderDetails(null);
+    setTimeout(() => window.scrollTo(0, currentScroll), 0);
   };
 
   const StatCard = ({ icon, label, value, unit, color, subtitle }) => (
@@ -116,14 +135,19 @@ function AnalyticsPage() {
               <div className="flex gap-2">
                 {rushHourHistory.length > 1 && (
                   <button
-                    onClick={() => setShowHistory(!showHistory)}
+                    onClick={handleToggleHistory}
                     className="text-purple-600 hover:text-purple-800 text-sm font-semibold px-3 py-1 rounded border border-purple-300 hover:bg-purple-50"
                   >
                     {showHistory ? '▲ Hide' : '▼ Show'} History ({rushHourHistory.length - 1})
                   </button>
                 )}
                 <button
-                  onClick={() => { setRushHourHistory([]); setShowHistory(false); }}
+                  onClick={() => { 
+                    const currentScroll = window.scrollY;
+                    setRushHourHistory([]); 
+                    setShowHistory(false);
+                    setTimeout(() => window.scrollTo(0, currentScroll), 0);
+                  }}
                   className="text-gray-500 hover:text-gray-700 text-sm px-3 py-1 rounded border border-gray-300 hover:bg-gray-50"
                 >
                   Clear All
@@ -135,7 +159,7 @@ function AnalyticsPage() {
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
               <div
                 className="bg-white rounded-lg p-4 shadow cursor-pointer hover:ring-2 hover:ring-blue-400 transition-all"
-                onClick={() => rushHourStats.orderDetails && setShowOrderDetails(rushHourStats)}
+                onClick={() => rushHourStats.orderDetails && handleShowOrderDetails(rushHourStats)}
               >
                 <p className="text-sm text-gray-600 mb-1">Orders Served <span className="text-blue-500">(click to view)</span></p>
                 <p className="text-3xl font-bold text-blue-600">
@@ -314,7 +338,7 @@ function AnalyticsPage() {
                   <h4 className="font-bold text-gray-700">Run #{run.runNumber} <span className="text-sm font-normal text-gray-400">({run.timestamp})</span></h4>
                 </div>
                 <div className="grid grid-cols-2 md:grid-cols-5 gap-3 text-sm">
-                  <div className="bg-blue-50 rounded p-2 cursor-pointer hover:ring-2 hover:ring-blue-300" onClick={() => run.orderDetails && setShowOrderDetails(run)}>
+                  <div className="bg-blue-50 rounded p-2 cursor-pointer hover:ring-2 hover:ring-blue-300" onClick={() => run.orderDetails && handleShowOrderDetails(run)}>
                     <p className="text-gray-500">Served <span className="text-blue-400 text-xs">▶</span></p>
                     <p className="font-bold text-blue-600">{run.ordersServed ?? run.totalOrders}</p>
                   </div>
@@ -447,7 +471,7 @@ function AnalyticsPage() {
 
       {/* Order Details Modal */}
       {showOrderDetails && showOrderDetails.orderDetails && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4" onClick={() => setShowOrderDetails(null)}>
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4" onClick={handleCloseOrderDetails}>
           <div className="bg-white rounded-xl shadow-2xl w-full max-w-6xl max-h-[85vh] flex flex-col" onClick={e => e.stopPropagation()}>
             {/* Modal Header */}
             <div className="flex justify-between items-center p-5 border-b bg-gradient-to-r from-blue-50 to-indigo-50 rounded-t-xl">
@@ -460,7 +484,7 @@ function AnalyticsPage() {
                   {' '}{showOrderDetails.orderDetails.filter(o => o.complaint).length} complaints
                 </p>
               </div>
-              <button onClick={() => setShowOrderDetails(null)} className="text-gray-400 hover:text-gray-600 text-2xl font-bold">✕</button>
+              <button onClick={handleCloseOrderDetails} className="text-gray-400 hover:text-gray-600 text-2xl font-bold">✕</button>
             </div>
 
             {/* Table */}
@@ -532,7 +556,7 @@ function AnalyticsPage() {
                 <span className="inline-block w-3 h-3 rounded bg-orange-100 mr-1 ml-3"></span> Complaint (&gt;10 min)
                 <span className="inline-block w-3 h-3 rounded bg-red-100 mr-1 ml-3"></span> Abandoned (timeout)
               </div>
-              <button onClick={() => setShowOrderDetails(null)} className="bg-gray-200 hover:bg-gray-300 px-4 py-2 rounded font-medium">
+              <button onClick={handleCloseOrderDetails} className="bg-gray-200 hover:bg-gray-300 px-4 py-2 rounded font-medium">
                 Close
               </button>
             </div>
